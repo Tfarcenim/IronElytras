@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "tfar.ironelytras.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ironelytras.refmap.json",
+  "mixins": [
+    "ClientPlayerEntityMixin",
+    "PlayerEntityMixin",
+    "LivingEntityMixin",
+    "ElytraLayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
