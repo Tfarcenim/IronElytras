@@ -1,4 +1,4 @@
-package tfar.ironelytras.mixin;
+package tfar.ironelytra.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
-import tfar.ironelytras.IronElytraItem;
+import tfar.ironelytra.IronElytraItem;
 
 @Mixin(LivingEntity.class)
 abstract class LivingEntityMixin extends Entity {
@@ -28,20 +28,14 @@ abstract class LivingEntityMixin extends Entity {
 		super(type, worldIn);
 	}
 
-	@Redirect(method = "updateElytra",at = @At(value = "INVOKE",target = "Lnet/minecraft/item/ItemStack;getItem()Lnet/minecraft/item/Item;"))
-	private Item fakeElytra(ItemStack stack){
-		if (stack.getItem() instanceof IronElytraItem)return Items.ELYTRA;
-		return stack.getItem();
-	}
-
-	@ModifyArgs(method = "travel",at = @At(value = "INVOKE",target = "Lnet/minecraft/util/math/Vec3d;mul(DDD)Lnet/minecraft/util/math/Vec3d;"),
-					slice = @Slice(to = @At(value = "INVOKE",target = "Lnet/minecraft/entity/LivingEntity;move(Lnet/minecraft/entity/MoverType;Lnet/minecraft/util/math/Vec3d;)V")))
+	@ModifyArgs(method = "travel",at = @At(value = "INVOKE",target = "Lnet/minecraft/util/math/vector/Vector3d;mul(DDD)Lnet/minecraft/util/math/vector/Vector3d;"),
+					slice = @Slice(
+									from = @At(value = "INVOKE",target = "Lnet/minecraft/entity/LivingEntity;hasNoGravity()Z")))
 	private void tweakDrag(Args args){
 		ItemStack stack = getItemStackFromSlot(EquipmentSlotType.CHEST);
 		if (stack.getItem() instanceof IronElytraItem) {
 			IronElytraItem ironElytra = (IronElytraItem)stack.getItem();
-			args.setAll(1 - ironElytra.getDrag(), 1 - ironElytra.getDrag(),1 - ironElytra.getDrag());
-
+			args.setAll(1 - ironElytra.getDrag(), 1 - 2 * ironElytra.getDrag(),1 - ironElytra.getDrag());
 		}
 	}
 }

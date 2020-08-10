@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#",
+    "X",
+    "#"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:diamond"
+    },
+    "X": {
+      "item": "ironelytra:gold_elytra"
+    }
+  },
+  "result": {
+    "item": "ironelytra:diamond_elytra"
+  }
+}

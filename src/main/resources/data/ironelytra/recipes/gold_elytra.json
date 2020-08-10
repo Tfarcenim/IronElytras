@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " # ",
+    "#X#",
+    " # "
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:gold_ingot"
+    },
+    "X": {
+      "item": "ironelytra:iron_elytra"
+    }
+  },
+  "result": {
+    "item": "ironelytra:gold_elytra"
+  }
+}

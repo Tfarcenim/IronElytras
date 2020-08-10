@@ -1,4 +1,4 @@
-package tfar.ironelytras;
+package tfar.ironelytra;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import javax.annotation.Nullable;
 
 public class IronElytraItem extends ElytraItem {
-	private final ElytraProperties elytraProperties;
+	public final ElytraProperties elytraProperties;
 
 	public IronElytraItem(Properties builder, ElytraProperties elytraProperties) {
 		super(builder);

@@ -1,4 +1,4 @@
-package tfar.ironelytras.mixin;
+package tfar.ironelytra.mixin;
 
 import net.minecraft.network.play.ServerPlayNetHandler;
 import org.spongepowered.asm.mixin.Mixin;

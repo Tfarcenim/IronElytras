@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "#",
+    "X"
+  ],
+  "key": {
+    "#": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "X": {
+      "item": "ironelytra:diamond_elytra"
+    }
+  },
+  "result": {
+    "item": "ironelytra:netherite_elytra"
+  }
+}

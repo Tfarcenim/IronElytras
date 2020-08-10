@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "tfar.ironelytra.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "ironelytra.refmap.json",
+  "mixins": [
+    "LivingEntityMixin",
+    "ServerPlayNetHandlerMixin"
+  ],
+  "client" : [
+    "ArmorStandRendererMixin",
+    "BipedRendererMixin",
+    "PlayerRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
