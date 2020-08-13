@@ -2,11 +2,13 @@ package tfar.ironelytra;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -15,13 +17,24 @@ import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import top.theillusivec4.caelus.api.RenderElytraEvent;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.SlotTypePreset;
+import top.theillusivec4.curios.api.type.inventory.IDynamicStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import java.util.Iterator;
+import java.util.Set;
 
 import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
 
@@ -36,31 +49,69 @@ public class IronElytra {
 
 	private static final EquipmentSlotType[] ARMOR_SLOTS = new EquipmentSlotType[]{EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET};
 
+	public static boolean curiousElytraLoaded;
+
+
 	public IronElytra() {
 		// Register the setup method for modloading
+		curiousElytraLoaded = ModList.get().isLoaded("curiouselytra");
 		IEventBus iEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		iEventBus.addGenericListener(Item.class, this::items);
 		iEventBus.addGenericListener(Enchantment.class, this::enchant);
+		iEventBus.addListener(this::enqueue);
 		EVENT_BUS.addListener(this::damage);
+		if (FMLEnvironment.dist == Dist.CLIENT && curiousElytraLoaded) {
+			EVENT_BUS.addListener(this::renderElytra);
+		}
+	}
+
+	private void enqueue(InterModEnqueueEvent evt) {
+		if (curiousElytraLoaded)
+		InterModComms.sendTo("curios", "register_type", () -> SlotTypePreset.BACK.getMessageBuilder().build());
+	}
+
+	private void renderElytra(RenderElytraEvent evt) {
+		PlayerEntity playerEntity = evt.getPlayer();
+		CuriosApi.getCuriosHelper().getCuriosHandler(playerEntity).ifPresent((handler) -> {
+			Set<String> tags = CuriosApi.getCuriosHelper().getCurioTags(Items.ELYTRA);
+
+			for (String id : tags) {
+				handler.getStacksHandler(id).ifPresent((stacksHandler) -> {
+					IDynamicStackHandler stackHandler = stacksHandler.getStacks();
+
+					for (int i = 0; i < stackHandler.getSlots(); ++i) {
+						ItemStack stack = stackHandler.getStackInSlot(i);
+						if (stack.getItem() instanceof IronElytraItem && stacksHandler.getRenders().get(i)) {
+							evt.setRender(true);
+							evt.setResourceLocation(((IronElytraItem)stack.getItem()).elytraProperties.texture);
+							if (stack.isEnchanted()) {
+								evt.setEnchanted(true);
+							}
+						}
+					}
+				});
+			}
+
+		});
 	}
 
 	public static int base = Items.ELYTRA.getMaxDamage();
 
 	private void items(final RegistryEvent.Register<Item> event) {
 		register(new IronElytraItem(new Item.Properties().maxDamage(base * 2)
-						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.005,
+						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.004,.02,.004,
 						new ResourceLocation(MODID, "textures/entity/iron_elytra.png"))), "iron_elytra", event.getRegistry());
 
 		register(new IronElytraItem(new Item.Properties().maxDamage(base * 3)
-						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.004,
+						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.003,.02,.003,
 						new ResourceLocation(MODID, "textures/entity/gold_elytra.png"))), "gold_elytra", event.getRegistry());
 
 		register(new IronElytraItem(new Item.Properties().maxDamage(base * 4)
-						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.003,
+						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.002,.02,.002,
 						new ResourceLocation(MODID, "textures/entity/diamond_elytra.png"))), "diamond_elytra", event.getRegistry());
 
 		register(new IronElytraItem(new Item.Properties().maxDamage(base * 5)
-						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON), new ElytraProperties(.002,
+						.group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON).isBurnable(), new ElytraProperties(.001,.02,.001,
 						new ResourceLocation(MODID, "textures/entity/netherite_elytra.png"))), "netherite_elytra", event.getRegistry());
 
 		register(new ElectricBoosterItem(new Item.Properties().group(ItemGroup.TRANSPORTATION).rarity(Rarity.UNCOMMON)), "electric_booster", event.getRegistry());
