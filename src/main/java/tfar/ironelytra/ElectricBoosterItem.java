@@ -50,7 +50,7 @@ public class ElectricBoosterItem extends Item {
 	@Nullable
 	@Override
 	public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-		return IronElytra.createProvider(new ItemStackEnergyStorage(1000000,stack));
+		return IronElytra.createProvider(new ItemStackEnergyStorage(IronElytra.Config.Server.booster_capacity.get(),stack));
 	}
 
 	/**
@@ -60,12 +60,11 @@ public class ElectricBoosterItem extends Item {
 	public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
 		if (stack.hasTag()) {
 			int energy = stack.getTag().getInt("energy");
-			int capacity = stack.getTag().getInt("capacity");
-			String fraction = energy+"/"+capacity+" FE";
+			String fraction = energy+"/"+IronElytra.Config.Server.booster_capacity.get()+" FE";
 			tooltip.add(new StringTextComponent(fraction));
 		} else {
 			int energy = 0;
-			int capacity = 1000000;
+			int capacity = IronElytra.Config.Server.booster_capacity.get();
 			String fraction = energy+"/"+capacity+" FE";
 			tooltip.add(new StringTextComponent(fraction));
 		}

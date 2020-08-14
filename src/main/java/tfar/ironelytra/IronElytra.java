@@ -1,5 +1,6 @@
 package tfar.ironelytra;
 
+import com.google.common.collect.Lists;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
@@ -9,6 +10,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -25,6 +27,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.IForgeRegistryEntry;
+import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.caelus.api.RenderElytraEvent;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotTypePreset;
@@ -34,6 +37,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
@@ -91,7 +95,6 @@ public class IronElytra {
 					}
 				});
 			}
-
 		});
 	}
 
@@ -148,6 +151,27 @@ public class IronElytra {
 		@Nonnull
 		public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
 			return CapabilityEnergy.ENERGY.orEmpty(cap, this.capability);
+		}
+	}
+
+	public static final Config.Server SERVER;
+	public static final ForgeConfigSpec SERVER_SPEC;
+
+	static {
+		final Pair<Config.Server, ForgeConfigSpec> specPair2 = new ForgeConfigSpec.Builder().configure(Config.Server::new);
+		SERVER_SPEC = specPair2.getRight();
+		SERVER = specPair2.getLeft();
+	}
+
+	public static class Config {
+
+		public static class Server {
+
+			public static ForgeConfigSpec.IntValue booster_capacity;
+
+			public Server(ForgeConfigSpec.Builder builder) {
+				booster_capacity = builder.comment("FE capacity of electric booster").defineInRange("booster_capacity",1000000,0, Integer.MAX_VALUE);
+			}
 		}
 	}
 }

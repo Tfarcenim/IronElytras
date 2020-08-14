@@ -9,6 +9,9 @@ public class ItemStackEnergyStorage extends EnergyStorage {
 	public ItemStackEnergyStorage(int capacity, ItemStack stack) {
 		super(capacity,capacity,capacity,0);
 		this.stack = stack;
+		if (stack.getTag() != null) {
+			energy = stack.getTag().getInt("energy");
+		}
 	}
 
 	@Override
@@ -27,6 +30,5 @@ public class ItemStackEnergyStorage extends EnergyStorage {
 
 	public void markDirty() {
 		stack.getOrCreateTag().putInt("energy",super.energy);
-		stack.getOrCreateTag().putInt("capacity",super.capacity);
 	}
 }
